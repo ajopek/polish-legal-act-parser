@@ -24,7 +24,7 @@ public class ActStructureHandler {
         parentsToSearch.add(parent);
         Arrays.stream(ActHierarchy.values())
                 .filter(level -> canHaveArticle(level))
-                .map(hl -> parentsToSearch.addAll(filterHierarchy(parent, hl)));
+                .forEach(hl -> parentsToSearch.addAll(filterHierarchy(parent, hl)));
 
         //find all children that are articles
         LinkedList<ActComponent> articlesToSearch = parentsToSearch.stream()
@@ -33,7 +33,7 @@ public class ActStructureHandler {
                 .collect(Collectors.toCollection(LinkedList::new));
 
         //find range of articles
-        if (articlesToSearch.isEmpty()) return "";
+        if (articlesToSearch.isEmpty()) return "Brak artykułów";
         ComponentId first = articlesToSearch.getFirst().getId();
         ComponentId last = first;
         first = articlesToSearch.stream()
