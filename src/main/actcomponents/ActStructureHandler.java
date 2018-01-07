@@ -1,9 +1,6 @@
 package actcomponents;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -21,19 +18,17 @@ public class ActStructureHandler {
     /*
      * Returns article range for given chapter or constitutional chapter.
      */
-    String getArticlesRange(ActComponent chapter) {
+    String getArticlesRange(ActComponent parent) {
         // find possible parents of articles
         List<ActComponent> parentsToSearch = new LinkedList<>();
-        Stream.of(ActHierarchy.Chapter,
-                ActHierarchy.ConstitutionChapter,
-                ActHierarchy.Section,
-                ActHierarchy.Titlechapter)
-                .forEach(hl -> parentsToSearch.addAll(filterHierarchy(chapter, hl)));
-        parentsToSearch.add(chapter);
+        parentsToSearch.add(parent);
+        Arrays.stream(ActHierarchy.values())
+                .filter(level -> canHaveArticle(level))
+                .map(hl -> parentsToSearch.addAll(filterHierarchy(parent, hl)));
 
         //find all children that are articles
         LinkedList<ActComponent> articlesToSearch = parentsToSearch.stream()
-                .map(parent -> filterHierarchy(parent, ActHierarchy.Article))
+                .map(toSearch -> filterHierarchy(toSearch, ActHierarchy.Article))
                 .flatMap(List::stream)
                 .collect(Collectors.toCollection(LinkedList::new));
 
@@ -48,7 +43,7 @@ public class ActStructureHandler {
         last = articlesToSearch.stream()
                 .map(ActComponent::getId)
                 .reduce(last, (id, acc) -> acc.compareTo(id) ? acc:id);
-        return "Art. " + first.toString() + "-" + last.toString();
+        return "Art. " + first.toString() + (first.equals(last)  ? "" : "-" + last.toString());
     }
 
     public LinkedList<ActComponent> getSectionsList(ActComponent actRoot){
