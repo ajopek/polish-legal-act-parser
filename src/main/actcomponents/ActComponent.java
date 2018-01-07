@@ -7,8 +7,8 @@ import java.util.Optional;
  */
 public class ActComponent {
     LinkedHashMap<ComponentId, ActComponent> children = new LinkedHashMap<>();
-    private String content;
-    private String title;
+    private String content = "";
+    private String title = "";
     private ComponentId id;
     private ActHierarchy hierarchyLevel;
     private ActComponent parent;

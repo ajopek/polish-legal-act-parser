@@ -21,7 +21,6 @@ public class FileHandler {
 
         } catch (IOException e) {
             System.out.println("Could not open " + filePath);
-            e.printStackTrace();
             System.exit(1);
         }
         return lines;

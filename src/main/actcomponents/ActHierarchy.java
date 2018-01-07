@@ -17,7 +17,7 @@ public enum ActHierarchy {
     Article("^Art" + ActStructureRegexp.componentId, "", 4),
     Paragraph("^([0-9]+)([a-z]||)\\.", "", 5),
     Subparagraph("^([0-9]+)([a-z]||)\\)", "", 6),
-    Letter("([a-z])\\)", "", 7);
+    Letter("(^[a-z])\\)", "", 7);
 
     private final Pattern pattern;
     private final Pattern titlePattern;
