@@ -20,17 +20,7 @@ public class ActStructureHandler {
      */
     String getArticlesRange(ActComponent parent) {
         // find possible parents of articles
-        List<ActComponent> parentsToSearch = new LinkedList<>();
-        parentsToSearch.add(parent);
-        Arrays.stream(ActHierarchy.values())
-                .filter(level -> canHaveArticle(level))
-                .forEach(hl -> parentsToSearch.addAll(filterHierarchy(parent, hl)));
-
-        //find all children that are articles
-        LinkedList<ActComponent> articlesToSearch = parentsToSearch.stream()
-                .map(toSearch -> filterHierarchy(toSearch, ActHierarchy.Article))
-                .flatMap(List::stream)
-                .collect(Collectors.toCollection(LinkedList::new));
+        LinkedList<ActComponent> articlesToSearch = getArticleList(parent);
 
         //find range of articles
         if (articlesToSearch.isEmpty()) return "Brak artykułów";
@@ -66,22 +56,23 @@ public class ActStructureHandler {
     }
 
     public LinkedList<ActComponent> getArticleList(ActComponent actRoot) {
-        List<ActComponent> parents =  actRoot.children.values().stream()
-                .filter(c -> canHaveArticle(c.getHierarchyLevel()))
-                .collect(Collectors.toCollection(LinkedList::new));
-        List<ActComponent> parentsToSearch = parents.stream()
-                .map(ActComponent::getChildren)
-                .map(HashMap::values)
-                .flatMap(v -> v.stream())
-                .filter(c -> canHaveArticle(c.getHierarchyLevel()))
-                .collect(Collectors.toCollection(LinkedList::new));
-        parentsToSearch.addAll(parents);
+        LinkedList<ActComponent> articles = new LinkedList<>();
+        articles.addAll(actRoot.children.values().stream()
+                .filter(ch -> ch.getHierarchyLevel().equals(ActHierarchy.Article))
+                .collect(Collectors.toCollection(LinkedList::new)));
+
+        if(canHaveArticle(actRoot.getHierarchyLevel())) {
+            List<ActComponent> parents = actRoot.children.values().stream()
+                    .filter(c -> canHaveArticle(c.getHierarchyLevel()))
+                    .collect(Collectors.toCollection(LinkedList::new));
+            articles.addAll(parents.stream()
+                    .map(p -> getArticleList(p))
+                    .flatMap(LinkedList::stream)
+                    .collect(Collectors.toCollection(LinkedList::new)));
+        }
 
 
-        return parentsToSearch.stream()
-                .map(parent -> filterHierarchy(parent, ActHierarchy.Article))
-                .flatMap(List::stream)
-                .collect(Collectors.toCollection(LinkedList::new));
+        return articles;
     }
 
     private boolean canHaveArticle(ActHierarchy level) {

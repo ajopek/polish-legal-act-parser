@@ -24,6 +24,9 @@ public class Viewer {
     private ViewerMode mode;
     private String range = null;
 
+    /*
+     * Patterns for extracting range from arguments.
+     */
     private final static String articlePattern = "^Art. ([0-9]+)([a-z]|)(\\.|)(,|)( |)";
     private final static String paragraphPattern = "^ust. ([0-9]+)([a-z]|)(\\.|)(,|)( |)";
     private final static String subparagraphPattern = "^pkt ([0-9]+)([a-z]|)\\)(,|)( |)";
